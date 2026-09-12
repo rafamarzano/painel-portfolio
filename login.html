@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Login | meu.painel</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --coral: #D4572A;
+    --coral-dark: #B8461F;
+    --cream: #F5F3EF;
+    --white: #FFFFFF;
+    --graphite: #1A1816;
+    --text-soft: #6B645C;
+    --border: #DDD8D0;
+    --success: #2D7A4F;
+    --error: #C4453C;
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --shadow: 0 10px 30px rgba(26,24,22,0.08), 0 2px 6px rgba(26,24,22,0.05);
+    --font-title: 'Fraunces', serif;
+    --font-body: 'Outfit', sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream);
+    font-family: var(--font-body);
+    color: var(--graphite);
+    padding: 24px;
+  }
+
+  .login-wrap{
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .login-card{
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 40px 36px;
+  }
+
+  .logo{
+    font-family: var(--font-title);
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--graphite);
+    margin-bottom: 24px;
+  }
+
+  .logo .dot{ color: var(--coral); }
+
+  h1{
+    font-family: var(--font-title);
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 8px;
+  }
+
+  .subtitle{
+    color: var(--text-soft);
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0 0 28px;
+  }
+
+  .banner{
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+
+  .banner.error{
+    background: #FBEBE9;
+    color: var(--error);
+    border: 1px solid #F3CFCB;
+  }
+
+  .banner.success{
+    background: #E9F5EE;
+    color: var(--success);
+    border: 1px solid #C9E7D5;
+  }
+
+  form label{
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--graphite);
+    margin-bottom: 16px;
+  }
+
+  form input{
+    width: 100%;
+    margin-top: 6px;
+    padding: 12px 14px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--cream);
+    color: var(--graphite);
+    transition: border-color .15s ease, background .15s ease;
+  }
+
+  form input:focus{
+    outline: none;
+    border-color: var(--coral);
+    background: var(--white);
+  }
+
+  button[type="submit"]{
+    width: 100%;
+    padding: 13px 14px;
+    margin-top: 4px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--coral);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease;
+  }
+
+  button[type="submit"]:hover:not(:disabled){ background: var(--coral-dark); }
+
+  button[type="submit"]:disabled{
+    opacity: .7;
+    cursor: default;
+  }
+
+  .forgot-link{
+    display: block;
+    text-align: center;
+    margin-top: 18px;
+    font-size: 14px;
+    color: var(--text-soft);
+    text-decoration: none;
+  }
+
+  .forgot-link:hover{ color: var(--coral); }
+
+  [hidden]{ display: none !important; }
+
+  @media (max-width: 480px){
+    .login-card{ padding: 32px 24px; }
+  }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="logo">meu<span class="dot">.</span>painel</div>
+
+    <h1>Acesso restrito</h1>
+    <p class="subtitle">Faça login para ver os números do seu portfólio.</p>
+
+    <div id="errorBanner" class="banner error" hidden></div>
+    <div id="successBanner" class="banner success" hidden></div>
+
+    <!-- Formulário de login -->
+    <form id="loginForm">
+      <label>
+        E-mail
+        <input type="email" id="email" required autocomplete="email" placeholder="voce@email.com">
+      </label>
+      <label>
+        Senha
+        <input type="password" id="password" required autocomplete="current-password" placeholder="Sua senha">
+      </label>
+      <button type="submit" id="submitBtn">Entrar</button>
+    </form>
+    <a href="#" id="forgotLink" class="forgot-link">Esqueci minha senha</a>
+
+    <!-- Formulário de recuperação de senha (começa escondido) -->
+    <form id="recoverForm" hidden>
+      <label>
+        E-mail
+        <input type="email" id="recoverEmail" required placeholder="voce@email.com">
+      </label>
+      <button type="submit" id="recoverBtn">Enviar link de recuperação</button>
+    </form>
+    <a href="#" id="backToLoginLink" class="forgot-link" hidden>Voltar para o login</a>
+  </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script>
+  const loginForm = document.getElementById('loginForm');
+  const recoverForm = document.getElementById('recoverForm');
+  const forgotLink = document.getElementById('forgotLink');
+  const backToLoginLink = document.getElementById('backToLoginLink');
+  const errorBanner = document.getElementById('errorBanner');
+  const successBanner = document.getElementById('successBanner');
+  const submitBtn = document.getElementById('submitBtn');
+  const recoverBtn = document.getElementById('recoverBtn');
+
+  function showBanner(el, msg) {
+    el.textContent = msg;
+    el.hidden = false;
+  }
+  function hideBanner(el) {
+    el.hidden = true;
+    el.textContent = '';
+  }
+  function hideAllBanners() {
+    hideBanner(errorBanner);
+    hideBanner(successBanner);
+  }
+
+  // Se já existe uma sessão ativa, pula direto para o painel.
+  (async () => {
+    const { data } = await Auth.client.auth.getSession();
+    if (data.session) {
+      window.location.href = 'painel.html';
+    }
+  })();
+
+  // Envio do login
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideAllBanners();
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Entrando...';
+
+    try {
+      await Auth.login(email, password);
+      window.location.href = 'painel.html';
+    } catch (err) {
+      showBanner(errorBanner, err.message || 'Não foi possível entrar. Tente novamente.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Entrar';
+    }
+  });
+
+  // Alterna para o formulário de recuperação de senha
+  forgotLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    hideAllBanners();
+    loginForm.hidden = true;
+    forgotLink.hidden = true;
+    recoverForm.hidden = false;
+    backToLoginLink.hidden = false;
+  });
+
+  // Volta para o formulário de login
+  backToLoginLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    hideAllBanners();
+    recoverForm.hidden = true;
+    backToLoginLink.hidden = true;
+    loginForm.hidden = false;
+    forgotLink.hidden = false;
+  });
+
+  // Envio da recuperação de senha
+  recoverForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideAllBanners();
+
+    const email = document.getElementById('recoverEmail').value.trim();
+
+    recoverBtn.disabled = true;
+    recoverBtn.textContent = 'Enviando...';
+
+    try {
+      await Auth.recuperarSenha(email);
+      showBanner(successBanner, 'Enviamos um link de recuperação para o seu e-mail.');
+    } catch (err) {
+      showBanner(errorBanner, err.message || 'Não foi possível enviar o e-mail. Tente novamente.');
+    } finally {
+      recoverBtn.disabled = false;
+      recoverBtn.textContent = 'Enviar link de recuperação';
+    }
+  });
+</script>
+</body>
+</html>

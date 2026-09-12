@@ -1,0 +1,1050 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel | meu.painel</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --coral: #D4572A;
+    --coral-dark: #B8461F;
+    --cream: #F5F3EF;
+    --white: #FFFFFF;
+    --graphite: #1A1816;
+    --text-soft: #6B645C;
+    --border: #DDD8D0;
+    --success: #2D7A4F;
+    --error: #C4453C;
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --shadow: 0 4px 20px rgba(26,24,22,0.06), 0 1px 3px rgba(26,24,22,0.04);
+    --font-title: 'Fraunces', serif;
+    --font-body: 'Outfit', sans-serif;
+    --sidebar-width: 260px;
+  }
+
+  * { box-sizing: border-box; }
+
+  /* A tela fica invisível até o guarda de autenticação confirmar a sessão */
+  body.auth-pending{ visibility: hidden; }
+
+  body{
+    margin: 0;
+    background: var(--cream);
+    font-family: var(--font-body);
+    color: var(--graphite);
+  }
+
+  a { color: inherit; }
+
+  .app{
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ---------------- Sidebar ---------------- */
+  .sidebar{
+    width: var(--sidebar-width);
+    background: var(--white);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 60;
+    transition: transform .25s ease;
+  }
+
+  .sidebar-top{
+    padding: 28px 24px 20px;
+  }
+
+  .logo{
+    font-family: var(--font-title);
+    font-size: 21px;
+    font-weight: 600;
+  }
+
+  .logo .dot{ color: var(--coral); }
+
+  .sidebar-nav{
+    flex: 1;
+    padding: 8px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .nav-item{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-soft);
+    cursor: pointer;
+    text-align: left;
+    transition: background .15s ease, color .15s ease;
+  }
+
+  .nav-item svg{ width: 20px; height: 20px; flex-shrink: 0; }
+
+  .nav-item:hover{ background: var(--cream); color: var(--graphite); }
+
+  .nav-item.active{
+    background: var(--coral);
+    color: var(--white);
+  }
+
+  .sidebar-footer{
+    padding: 18px 24px 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .user-email{
+    font-size: 13px;
+    color: var(--text-soft);
+    margin-bottom: 10px;
+    word-break: break-all;
+  }
+
+  .btn-logout{
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    background: var(--white);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--graphite);
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease;
+  }
+
+  .btn-logout:hover{ border-color: var(--error); color: var(--error); }
+
+  .overlay{
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,24,22,.4);
+    z-index: 55;
+  }
+
+  .overlay.visible{ display: block; }
+
+  .menu-toggle{
+    display: none;
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 70;
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--border);
+    background: var(--white);
+    border-radius: var(--radius-sm);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+
+  .menu-toggle svg{ width: 20px; height: 20px; }
+
+  /* ---------------- Conteúdo ---------------- */
+  .content{
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    padding: 36px 44px 60px;
+    max-width: 1200px;
+  }
+
+  .content-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .content-header h1{
+    font-family: var(--font-title);
+    font-size: 30px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .period-filters{
+    display: flex;
+    gap: 8px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 4px;
+  }
+
+  .period-btn{
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+
+  .period-btn:hover{ color: var(--graphite); }
+
+  .period-btn.active{
+    background: var(--coral);
+    color: var(--white);
+  }
+
+  .banner{
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .banner.error{
+    background: #FBEBE9;
+    color: var(--error);
+    border: 1px solid #F3CFCB;
+  }
+
+  [hidden]{ display: none !important; }
+
+  .greeting{
+    font-size: 16px;
+    color: var(--text-soft);
+    margin: 0 0 24px;
+  }
+
+  .card{
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 24px;
+  }
+
+  .card h2{
+    font-family: var(--font-title);
+    font-size: 19px;
+    font-weight: 600;
+    margin: 0 0 18px;
+  }
+
+  .empty-state{
+    color: var(--text-soft);
+    font-size: 14px;
+    margin: 8px 0;
+  }
+
+  /* ---------------- Cartões de número ---------------- */
+  .stat-grid{
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card{
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow);
+    padding: 20px;
+  }
+
+  .stat-card--highlight{
+    background: var(--coral);
+    border-color: var(--coral);
+  }
+
+  .stat-number{
+    font-family: var(--font-title);
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+
+  .stat-card--highlight .stat-number{ color: var(--white); }
+
+  .stat-label{
+    font-size: 13px;
+    color: var(--text-soft);
+    margin-top: 6px;
+  }
+
+  .stat-card--highlight .stat-label{ color: rgba(255,255,255,.85); }
+
+  /* ---------------- Cartão de destaque de contato ---------------- */
+  .contact-highlight{
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    border: 1px solid var(--coral);
+    margin-bottom: 20px;
+  }
+
+  .contact-highlight .stat-number{ color: var(--coral); font-size: 36px; }
+
+  .contact-highlight-text h3{
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .contact-highlight-text p{
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-soft);
+    max-width: 480px;
+  }
+
+  /* ---------------- Gráfico de barras ---------------- */
+  .chart-card{ margin-bottom: 20px; position: relative; }
+
+  .bars-row{
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 160px;
+    padding-top: 34px;
+  }
+
+  .bar-wrap{
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .bar{
+    width: 100%;
+    min-height: 4px;
+    background: var(--coral);
+    border-radius: 6px 6px 0 0;
+    transition: background .15s ease;
+  }
+
+  .bar-wrap:hover .bar{ background: var(--coral-dark); }
+
+  .chart-tooltip{
+    position: absolute;
+    background: var(--graphite);
+    color: var(--white);
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    pointer-events: none;
+    transform: translate(-50%, -100%);
+    z-index: 10;
+  }
+
+  /* ---------------- Blocos do Portfólio ---------------- */
+  .portfolio-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .portfolio-grid .card.wide{ grid-column: 1 / -1; }
+
+  .video-row, .button-row, .contact-row{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .video-row:last-child, .button-row:last-child, .contact-row:last-child{ border-bottom: none; }
+
+  .video-thumb{
+    width: 90px;
+    height: 51px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .video-info{ flex: 1; min-width: 0; }
+
+  .video-title{
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .video-title:hover{ color: var(--coral); }
+
+  .video-count{
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-soft);
+    flex-shrink: 0;
+    min-width: 32px;
+    text-align: right;
+  }
+
+  .bar-track{
+    background: var(--cream);
+    border-radius: 6px;
+    height: 8px;
+    overflow: hidden;
+  }
+
+  .bar-fill{
+    height: 100%;
+    background: var(--coral);
+    border-radius: 6px;
+  }
+
+  .button-row .button-name{
+    width: 40%;
+    font-size: 14px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .button-row .bar-track{ flex: 1; }
+
+  .button-row .video-count{ min-width: 28px; }
+
+  .contact-row .button-name{ width: 60%; }
+
+  /* ---------------- Mensagens / leads ---------------- */
+  .lead-card{
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+
+  .lead-card summary{
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 14px 16px;
+    cursor: pointer;
+    background: var(--white);
+  }
+
+  .lead-card summary::-webkit-details-marker{ display: none; }
+
+  .lead-badge{
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: var(--cream);
+    color: var(--text-soft);
+  }
+
+  .lead-badge--contact{ background: #FBEBE9; color: var(--coral-dark); }
+  .lead-badge--popup{ background: #E9F5EE; color: var(--success); }
+
+  .lead-name{ font-weight: 600; font-size: 14px; }
+  .lead-date{ font-size: 13px; color: var(--text-soft); }
+  .lead-email{ font-size: 13px; color: var(--text-soft); margin-left: auto; }
+
+  .lead-body{
+    padding: 4px 16px 18px;
+    border-top: 1px solid var(--border);
+    background: var(--cream);
+  }
+
+  .lead-body p{ font-size: 14px; margin: 10px 0; line-height: 1.5; }
+
+  .lead-actions{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+
+  .btn-action{
+    display: inline-block;
+    padding: 9px 16px;
+    border-radius: var(--radius-sm);
+    background: var(--coral);
+    color: var(--white);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background .15s ease;
+  }
+
+  .btn-action:hover{ background: var(--coral-dark); }
+
+  .btn-whatsapp{ background: var(--success); }
+  .btn-whatsapp:hover{ background: #235f3d; }
+
+  /* ---------------- Responsivo ---------------- */
+  @media (max-width: 900px){
+    .stat-grid{ grid-template-columns: repeat(2, 1fr); }
+    .portfolio-grid{ grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 768px){
+    .menu-toggle{ display: flex; }
+
+    .sidebar{
+      transform: translateX(-100%);
+      width: 240px;
+    }
+
+    .sidebar.open{ transform: translateX(0); }
+
+    .content{
+      margin-left: 0;
+      padding: 84px 20px 50px;
+    }
+
+    .content-header h1{ font-size: 24px; }
+
+    .lead-email{ margin-left: 0; width: 100%; }
+  }
+
+  @media (max-width: 480px){
+    .stat-grid{ grid-template-columns: 1fr 1fr; }
+    .contact-highlight{ flex-direction: column; align-items: flex-start; }
+    .period-filters{ width: 100%; justify-content: space-between; }
+    .period-btn{ flex: 1; padding: 8px 6px; }
+  }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/auth.js"></script>
+</head>
+<body class="auth-pending">
+
+<div class="app">
+
+  <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="logo">meu<span class="dot">.</span>painel</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-tab="principal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Menu Principal
+      </button>
+      <button class="nav-item" data-tab="portfolio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Portfólio
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-email" id="userEmail">...</div>
+      <button class="btn-logout" id="logoutBtn">Sair</button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="content-header">
+      <h1 id="pageTitle">Menu Principal</h1>
+      <div class="period-filters">
+        <button class="period-btn active" data-period="all">Tudo</button>
+        <button class="period-btn" data-period="7">7d</button>
+        <button class="period-btn" data-period="30">30d</button>
+        <button class="period-btn" data-period="90">90d</button>
+      </div>
+    </div>
+
+    <div id="globalError" class="banner error" hidden></div>
+
+    <!-- ===================== ABA: MENU PRINCIPAL ===================== -->
+    <section id="tab-principal" class="tab-panel">
+      <p class="greeting">Olá! Aqui estão os números do seu portfólio.</p>
+
+      <div class="stat-grid">
+        <div class="stat-card stat-card--highlight">
+          <div class="stat-number" id="statVisitas">0</div>
+          <div class="stat-label">Visitas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statVisitantes">0</div>
+          <div class="stat-label">Visitantes únicos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statCliques">0</div>
+          <div class="stat-label">Cliques em botões</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statVideos">0</div>
+          <div class="stat-label">Vídeos vistos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statMensagens">0</div>
+          <div class="stat-label">Mensagens</div>
+        </div>
+      </div>
+
+      <div class="card contact-highlight">
+        <div class="stat-number" id="statContato">0</div>
+        <div class="contact-highlight-text">
+          <h3>Clicaram para entrar em contato</h3>
+          <p>Conta quem clicou em WhatsApp, e-mail, Instagram ou no botão de enviar o formulário.</p>
+        </div>
+      </div>
+
+      <div class="card chart-card">
+        <h2>Visitas nos últimos 14 dias</h2>
+        <div class="bars-row" id="chartBars"></div>
+        <div class="chart-tooltip" id="chartTooltip" hidden></div>
+      </div>
+    </section>
+
+    <!-- ===================== ABA: PORTFÓLIO ===================== -->
+    <section id="tab-portfolio" class="tab-panel" hidden>
+      <div class="portfolio-grid">
+        <div class="card wide">
+          <h2>Vídeos mais vistos</h2>
+          <div id="videosList"></div>
+        </div>
+
+        <div class="card">
+          <h2>Botões mais clicados</h2>
+          <div id="buttonsList"></div>
+        </div>
+
+        <div class="card">
+          <h2>Cliques para contato</h2>
+          <div id="contactList"></div>
+        </div>
+
+        <div class="card wide">
+          <h2>Mensagens recebidas</h2>
+          <div id="leadsList"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(async function () {
+
+  /* ============================================================
+     1) GUARDA DE AUTENTICAÇÃO
+     Nada do painel é exibido antes da sessão ser confirmada.
+     ============================================================ */
+  const usuario = await Auth.checkAuth();
+  if (!usuario) return; // Auth.checkAuth já redireciona para login.html
+
+  document.getElementById('userEmail').textContent = usuario.email;
+  document.body.classList.remove('auth-pending');
+
+  /* ============================================================
+     2) NAVEGAÇÃO: abas, período e menu mobile
+     ============================================================ */
+  const tabButtons = document.querySelectorAll('.nav-item');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+  const pageTitle = document.getElementById('pageTitle');
+  const periodButtons = document.querySelectorAll('.period-btn');
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const globalError = document.getElementById('globalError');
+
+  const TITULOS = { principal: 'Menu Principal', portfolio: 'Portfólio' };
+  let currentPeriod = 'all';
+
+  logoutBtn.addEventListener('click', () => Auth.logout());
+
+  function fecharGaveta() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('visible');
+  }
+
+  menuToggle.addEventListener('click', () => {
+    sidebar.classList.add('open');
+    overlay.classList.add('visible');
+  });
+  overlay.addEventListener('click', fecharGaveta);
+
+  tabButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      tabButtons.forEach((b) => b.classList.toggle('active', b === btn));
+      tabPanels.forEach((p) => { p.hidden = p.id !== `tab-${tab}`; });
+      pageTitle.textContent = TITULOS[tab];
+      fecharGaveta();
+    });
+  });
+
+  periodButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      periodButtons.forEach((b) => b.classList.toggle('active', b === btn));
+      currentPeriod = btn.dataset.period;
+      render();
+    });
+  });
+
+  /* ============================================================
+     3) CARREGAMENTO DOS DADOS (uma única vez, com paginação)
+     O Supabase devolve no máximo 1000 linhas por consulta, então
+     buscamos em blocos de 1000 até a tabela acabar.
+     ============================================================ */
+  async function buscarTudo(tabela) {
+    const TAMANHO_BLOCO = 1000;
+    let tudo = [];
+    let inicio = 0;
+
+    while (true) {
+      const { data, error } = await Auth.client
+        .from(tabela)
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(inicio, inicio + TAMANHO_BLOCO - 1);
+
+      if (error) throw error;
+
+      tudo = tudo.concat(data || []);
+
+      if (!data || data.length < TAMANHO_BLOCO) break;
+      inicio += TAMANHO_BLOCO;
+    }
+
+    return tudo;
+  }
+
+  let eventsCache = [];
+  let leadsCache = [];
+
+  try {
+    [eventsCache, leadsCache] = await Promise.all([
+      buscarTudo('portfolio_events'),
+      buscarTudo('portfolio_leads'),
+    ]);
+  } catch (err) {
+    console.error('Erro ao carregar dados do Supabase:', err);
+    globalError.hidden = false;
+    globalError.textContent = 'Não foi possível carregar os dados agora. Tente novamente mais tarde.';
+  }
+
+  /* ============================================================
+     4) FUNÇÕES AUXILIARES
+     ============================================================ */
+  function escapeHtml(valor) {
+    if (valor === null || valor === undefined) return '';
+    return String(valor)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function numeroPt(n) {
+    return (n || 0).toLocaleString('pt-BR');
+  }
+
+  function filtrarPorPeriodo(linhas, periodo) {
+    if (periodo === 'all') return linhas;
+    const dias = parseInt(periodo, 10);
+    const corte = Date.now() - dias * 24 * 60 * 60 * 1000;
+    return linhas.filter((r) => new Date(r.created_at).getTime() >= corte);
+  }
+
+  function formatarNomeBotao(nome) {
+    return nome
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+
+  function computeStats(events, leads) {
+    const pageViews = events.filter((e) => e.event_type === 'page_view');
+    const visitantesUnicos = new Set(pageViews.map((e) => e.session_id)).size;
+    const buttonClicks = events.filter((e) => e.event_type === 'button_click');
+    const videoViews = events.filter((e) => e.event_type === 'video_view');
+    const contatoClicks = buttonClicks.filter((e) => e.event_name && e.event_name.startsWith('contact_'));
+
+    return {
+      visitas: pageViews.length,
+      visitantesUnicos,
+      cliques: buttonClicks.length,
+      videos: videoViews.length,
+      mensagens: leads.length,
+      contato: contatoClicks.length,
+    };
+  }
+
+  function computeTopVideos(events) {
+    const mapa = new Map();
+    events
+      .filter((e) => e.event_type === 'video_view')
+      .forEach((e) => {
+        const id = e.event_name || 'desconhecido';
+        const titulo = (e.metadata && e.metadata.title) || id;
+        if (!mapa.has(id)) mapa.set(id, { id, titulo, count: 0 });
+        mapa.get(id).count += 1;
+      });
+    return Array.from(mapa.values()).sort((a, b) => b.count - a.count);
+  }
+
+  function computeTopButtons(events) {
+    const mapa = new Map();
+    events
+      .filter((e) => e.event_type === 'button_click')
+      .forEach((e) => {
+        const nome = e.event_name || 'desconhecido';
+        mapa.set(nome, (mapa.get(nome) || 0) + 1);
+      });
+    return Array.from(mapa.entries())
+      .map(([nome, count]) => ({ nome, count }))
+      .sort((a, b) => b.count - a.count);
+  }
+
+  /* ============================================================
+     5) RENDERIZAÇÃO, ABA MENU PRINCIPAL
+     ============================================================ */
+  function renderPrincipal(events, leads) {
+    const stats = computeStats(events, leads);
+
+    document.getElementById('statVisitas').textContent = numeroPt(stats.visitas);
+    document.getElementById('statVisitantes').textContent = numeroPt(stats.visitantesUnicos);
+    document.getElementById('statCliques').textContent = numeroPt(stats.cliques);
+    document.getElementById('statVideos').textContent = numeroPt(stats.videos);
+    document.getElementById('statMensagens').textContent = numeroPt(stats.mensagens);
+    document.getElementById('statContato').textContent = numeroPt(stats.contato);
+
+    renderChart(events);
+  }
+
+  let tooltipTimeout = null;
+
+  function renderChart(events) {
+    const container = document.getElementById('chartBars');
+    const tooltip = document.getElementById('chartTooltip');
+    container.innerHTML = '';
+
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    const dias = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(hoje);
+      d.setDate(d.getDate() - i);
+      dias.push(d);
+    }
+
+    const contagens = dias.map((dia) => {
+      const inicio = dia.getTime();
+      const fim = inicio + 24 * 60 * 60 * 1000;
+      return events.filter((e) => {
+        if (e.event_type !== 'page_view') return false;
+        const t = new Date(e.created_at).getTime();
+        return t >= inicio && t < fim;
+      }).length;
+    });
+
+    const max = Math.max(1, ...contagens);
+
+    dias.forEach((dia, idx) => {
+      const count = contagens[idx];
+      const pct = Math.max(4, Math.round((count / max) * 100));
+
+      const wrap = document.createElement('div');
+      wrap.className = 'bar-wrap';
+
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      bar.style.height = pct + '%';
+      wrap.appendChild(bar);
+
+      const dataFormatada = dia.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      const textoTooltip = `${dataFormatada}: ${count} ${count === 1 ? 'visita' : 'visitas'}`;
+
+      wrap.addEventListener('mouseenter', () => {
+        tooltip.textContent = textoTooltip;
+        tooltip.hidden = false;
+        tooltip.style.left = (wrap.offsetLeft + wrap.offsetWidth / 2) + 'px';
+        tooltip.style.top = '28px';
+      });
+      wrap.addEventListener('mouseleave', () => { tooltip.hidden = true; });
+
+      container.appendChild(wrap);
+    });
+  }
+
+  /* ============================================================
+     6) RENDERIZAÇÃO, ABA PORTFÓLIO
+     ============================================================ */
+  function renderPortfolio(events, leads) {
+    renderVideos(events);
+    renderButtons(events);
+    renderContatos(events);
+    renderLeads(leads);
+  }
+
+  function renderVideos(events) {
+    const container = document.getElementById('videosList');
+    const videos = computeTopVideos(events);
+
+    if (videos.length === 0) {
+      container.innerHTML = '<p class="empty-state">Nenhum vídeo assistido ainda.</p>';
+      return;
+    }
+
+    const max = videos[0].count;
+    container.innerHTML = videos.map((v) => {
+      const idSeguro = encodeURIComponent(v.id);
+      const url = `https://www.youtube.com/watch?v=${idSeguro}`;
+      const pct = Math.max(4, Math.round((v.count / max) * 100));
+      return `
+        <div class="video-row">
+          <a href="${url}" target="_blank" rel="noopener">
+            <img class="video-thumb" src="https://i.ytimg.com/vi/${idSeguro}/mqdefault.jpg" alt="${escapeHtml(v.titulo)}" loading="lazy">
+          </a>
+          <div class="video-info">
+            <a href="${url}" target="_blank" rel="noopener" class="video-title">${escapeHtml(v.titulo)}</a>
+            <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+          </div>
+          <div class="video-count">${numeroPt(v.count)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderButtons(events) {
+    const container = document.getElementById('buttonsList');
+    const botoes = computeTopButtons(events);
+
+    if (botoes.length === 0) {
+      container.innerHTML = '<p class="empty-state">Nenhum clique registrado ainda.</p>';
+      return;
+    }
+
+    const max = botoes[0].count;
+    container.innerHTML = botoes.map((b) => `
+      <div class="button-row">
+        <div class="button-name">${escapeHtml(formatarNomeBotao(b.nome))}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.max(4, Math.round((b.count / max) * 100))}%"></div></div>
+        <div class="video-count">${numeroPt(b.count)}</div>
+      </div>
+    `).join('');
+  }
+
+  function renderContatos(events) {
+    const container = document.getElementById('contactList');
+    const contatos = computeTopButtons(events).filter((b) => b.nome.startsWith('contact_'));
+
+    if (contatos.length === 0) {
+      container.innerHTML = '<p class="empty-state">Nenhum clique de contato ainda.</p>';
+      return;
+    }
+
+    const max = contatos[0].count;
+    container.innerHTML = contatos.map((c) => `
+      <div class="contact-row">
+        <div class="button-name">${escapeHtml(formatarNomeBotao(c.nome.replace('contact_', '')))}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.max(4, Math.round((c.count / max) * 100))}%"></div></div>
+        <div class="video-count">${numeroPt(c.count)}</div>
+      </div>
+    `).join('');
+  }
+
+  function renderLeads(leads) {
+    const container = document.getElementById('leadsList');
+
+    if (leads.length === 0) {
+      container.innerHTML = '<p class="empty-state">Nenhuma mensagem por enquanto.</p>';
+      return;
+    }
+
+    container.innerHTML = leads.map((lead) => {
+      const data = new Date(lead.created_at).toLocaleDateString('pt-BR', {
+        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
+      });
+      const origemLabel = lead.source === 'popup' ? 'Popup' : 'Contato';
+      const origemClasse = lead.source === 'popup' ? 'popup' : 'contact';
+      const digitosTelefone = (lead.phone || '').replace(/\D/g, '');
+      const botaoWhatsapp = digitosTelefone
+        ? `<a class="btn-action btn-whatsapp" href="https://wa.me/${digitosTelefone}" target="_blank" rel="noopener">Chamar no WhatsApp</a>`
+        : '';
+
+      return `
+        <details class="lead-card">
+          <summary>
+            <span class="lead-badge lead-badge--${origemClasse}">${escapeHtml(origemLabel)}</span>
+            <span class="lead-name">${escapeHtml(lead.name || 'Sem nome')}</span>
+            <span class="lead-date">${data}</span>
+            <span class="lead-email">${escapeHtml(lead.email || '')}</span>
+          </summary>
+          <div class="lead-body">
+            <p><strong>Telefone:</strong> ${escapeHtml(lead.phone || 'Não informado')}</p>
+            <p><strong>Marca:</strong> ${escapeHtml(lead.brand || 'Não informado')}</p>
+            <p><strong>Orçamento:</strong> ${escapeHtml(lead.budget || 'Não informado')}</p>
+            <p><strong>Mensagem:</strong> ${escapeHtml(lead.message || 'Sem mensagem')}</p>
+            <div class="lead-actions">
+              <a class="btn-action" href="mailto:${escapeHtml(lead.email || '')}">Responder por e-mail</a>
+              ${botaoWhatsapp}
+            </div>
+          </div>
+        </details>
+      `;
+    }).join('');
+  }
+
+  /* ============================================================
+     7) RENDERIZAÇÃO GERAL (chamada ao carregar e ao trocar período)
+     ============================================================ */
+  function render() {
+    const events = filtrarPorPeriodo(eventsCache, currentPeriod);
+    const leads = filtrarPorPeriodo(leadsCache, currentPeriod);
+    renderPrincipal(events, leads);
+    renderPortfolio(events, leads);
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
