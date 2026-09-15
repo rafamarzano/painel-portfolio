@@ -8,24 +8,29 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
   :root{
-    --coral: #D4572A;
-    --coral-dark: #B8461F;
-    --cream: #F5F3EF;
+    --pink: #FF1493;
+    --pink-dark: #E91E8C;
+    --pink-pastel: #FFB6D9;
     --white: #FFFFFF;
-    --graphite: #1A1816;
-    --text-soft: #6B645C;
-    --border: #DDD8D0;
+    --black: #000000;
+    --text-soft: #6B6B6B;
+    --border: #000000;
+    --yellow: #FFEB3B;
+    --blue-pastel: #ADD8E6;
+    --red-punch: #FF4444;
     --success: #2D7A4F;
     --error: #C4453C;
     --radius-sm: 12px;
     --radius-md: 16px;
     --radius-lg: 24px;
-    --shadow: 0 10px 30px rgba(26,24,22,0.08), 0 2px 6px rgba(26,24,22,0.05);
-    --font-title: 'Fraunces', serif;
+    --border-width: 3px;
+    --shadow-hard: 8px 8px 0 var(--black);
+    --shadow-hard-sm: 3px 3px 0 var(--black);
+    --font-title: 'Fredoka', sans-serif;
     --font-body: 'Outfit', sans-serif;
   }
 
@@ -37,39 +42,76 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--cream);
+    background-color: var(--pink-pastel);
+    background-image: radial-gradient(rgba(255,255,255,.6) 2px, transparent 2px);
+    background-size: 22px 22px;
     font-family: var(--font-body);
-    color: var(--graphite);
-    padding: 24px;
+    color: var(--black);
+    padding: 48px 24px;
   }
 
   .login-wrap{
     width: 100%;
     max-width: 420px;
+    position: relative;
+  }
+
+  /* Stickers flutuantes ao redor do cartao, so decoracao */
+  .floaty{
+    position: absolute;
+    font-size: 30px;
+    pointer-events: none;
+    user-select: none;
+    animation: float 4s ease-in-out infinite;
+    filter: drop-shadow(1px 1px 0 rgba(0,0,0,.15));
+  }
+  .floaty-1{ top: -26px; left: -22px; color: var(--yellow); animation-delay: 0s; }
+  .floaty-2{ top: -18px; right: -18px; color: var(--pink); font-size: 26px; animation-delay: .7s; }
+  .floaty-3{ bottom: -22px; left: 10px; color: var(--blue-pastel); animation-delay: 1.4s; }
+  .floaty-4{ bottom: -20px; right: -14px; color: var(--pink); font-size: 22px; animation-delay: 2.1s; }
+
+  @keyframes float{
+    0%, 100%{ transform: translateY(0) rotate(-8deg); }
+    50%{ transform: translateY(-12px) rotate(8deg); }
   }
 
   .login-card{
     background: var(--white);
-    border: 1px solid var(--border);
+    border: var(--border-width) solid var(--border);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-hard);
     padding: 40px 36px;
+    position: relative;
   }
 
   .logo{
     font-family: var(--font-title);
     font-size: 24px;
-    font-weight: 600;
-    color: var(--graphite);
-    margin-bottom: 24px;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 20px;
   }
 
-  .logo .dot{ color: var(--coral); }
+  .logo .dot{ color: var(--pink); }
+
+  .sticky-note{
+    display: inline-block;
+    background: var(--yellow);
+    border: 2px solid var(--black);
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-family: var(--font-title);
+    font-size: 12px;
+    font-weight: 600;
+    transform: rotate(-4deg);
+    box-shadow: 2px 2px 0 var(--black);
+    margin-bottom: 14px;
+  }
 
   h1{
     font-family: var(--font-title);
     font-size: 28px;
-    font-weight: 600;
+    font-weight: 700;
     margin: 0 0 8px;
   }
 
@@ -86,25 +128,25 @@
     font-size: 14px;
     margin-bottom: 20px;
     line-height: 1.4;
+    border: 2px solid var(--black);
+    font-weight: 500;
   }
 
   .banner.error{
-    background: #FBEBE9;
+    background: #FFE3E3;
     color: var(--error);
-    border: 1px solid #F3CFCB;
   }
 
   .banner.success{
-    background: #E9F5EE;
+    background: #E1F5E9;
     color: var(--success);
-    border: 1px solid #C9E7D5;
   }
 
   form label{
     display: block;
     font-size: 14px;
-    font-weight: 500;
-    color: var(--graphite);
+    font-weight: 600;
+    color: var(--black);
     margin-bottom: 16px;
   }
 
@@ -114,35 +156,42 @@
     padding: 12px 14px;
     font-family: var(--font-body);
     font-size: 15px;
-    border: 1px solid var(--border);
+    border: 2px solid var(--black);
     border-radius: var(--radius-sm);
-    background: var(--cream);
-    color: var(--graphite);
-    transition: border-color .15s ease, background .15s ease;
+    background: var(--white);
+    color: var(--black);
+    transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
   }
 
   form input:focus{
     outline: none;
-    border-color: var(--coral);
-    background: var(--white);
+    border-color: var(--pink);
+    box-shadow: var(--shadow-hard-sm);
+    transform: translate(-1px, -1px);
   }
 
   button[type="submit"]{
     width: 100%;
     padding: 13px 14px;
     margin-top: 4px;
-    border: none;
+    border: var(--border-width) solid var(--black);
     border-radius: var(--radius-sm);
-    background: var(--coral);
+    background: var(--pink);
     color: var(--white);
     font-family: var(--font-body);
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: background .15s ease;
+    box-shadow: var(--shadow-hard-sm);
+    transition: background .15s ease, transform .1s ease, box-shadow .1s ease;
   }
 
-  button[type="submit"]:hover:not(:disabled){ background: var(--coral-dark); }
+  button[type="submit"]:hover:not(:disabled){ background: var(--pink-dark); }
+
+  button[type="submit"]:active:not(:disabled){
+    transform: translate(3px, 3px);
+    box-shadow: none;
+  }
 
   button[type="submit"]:disabled{
     opacity: .7;
@@ -154,16 +203,21 @@
     text-align: center;
     margin-top: 18px;
     font-size: 14px;
+    font-weight: 500;
     color: var(--text-soft);
     text-decoration: none;
   }
 
-  .forgot-link:hover{ color: var(--coral); }
+  .forgot-link:hover{
+    color: var(--pink-dark);
+    text-decoration: underline wavy var(--pink);
+  }
 
   [hidden]{ display: none !important; }
 
   @media (max-width: 480px){
     .login-card{ padding: 32px 24px; }
+    .floaty-3, .floaty-4{ display: none; }
   }
 </style>
 
@@ -172,9 +226,15 @@
 <body>
 
 <div class="login-wrap">
+  <span class="floaty floaty-1" aria-hidden="true">★</span>
+  <span class="floaty floaty-2" aria-hidden="true">♥</span>
+  <span class="floaty floaty-3" aria-hidden="true">✦</span>
+  <span class="floaty floaty-4" aria-hidden="true">♥</span>
+
   <div class="login-card">
     <div class="logo">meu<span class="dot">.</span>painel</div>
 
+    <div class="sticky-note">bem-vindo(a) de volta!</div>
     <h1>Acesso restrito</h1>
     <p class="subtitle">Faça login para ver os números do seu portfólio.</p>
 
