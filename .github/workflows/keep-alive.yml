@@ -1,0 +1,25 @@
+name: Manter Supabase ativo
+
+# O plano gratuito do Supabase pausa projetos parados por 7 dias.
+# Este job consulta os dois projetos a cada 3 dias para evitar a pausa.
+on:
+  schedule:
+    - cron: '0 12 */3 * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consultar os projetos
+        env:
+          KEY_PAINEL: ${{ secrets.SUPABASE_KEY_PAINEL }}
+          KEY_UGC: ${{ secrets.SUPABASE_KEY_UGC }}
+        run: |
+          ping() {
+            code=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: $2" -H "Authorization: Bearer $2" "$1/rest/v1/portfolio_events?select=id&limit=1")
+            echo "$1 -> $code"
+            [ "$code" -ge 200 ] && [ "$code" -lt 500 ]
+          }
+          ping "https://qdxsydfrbirjoamqbodb.supabase.co" "$KEY_PAINEL"
+          ping "https://yoqariscwuozvgpbdazh.supabase.co" "$KEY_UGC"
